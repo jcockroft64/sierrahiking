@@ -1,0 +1,8 @@
+The maps function on our website was not working because I had not set up the Google Maps API.  
+We were getting the following error: https://docs.wpgmaps.com/rAvw-this-page-cant-load-google-maps-correctly
+I enabled the “Google Maps Platform” :   https://mapsplatform.google.com/
+Good documentation on the Google Maps Platform is here:   https://developers.google.com/maps/get-started
+I set up a Sierra Hiking project and entered my credit-card: https://console.cloud.google.com/welcome?project=sierra-hiking  
+        (needs jcockroft96@gmail.com login)
+On our Sierrahiking.net Wordpress site, under maps, advanced settings I entered my Google Maps API key.
+You will note there are general map settings and specific map settings.   There are defaults for both.
