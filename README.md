@@ -7,4 +7,6 @@ The Design folder should contain concrete notes about the site which includes in
 
 The Notes folder contains any free-form notes that we have.   Significant emails or MacOS Notes can be stored here.
 
+The Tutorials folder contains instructions on various aspects of site and feature customization outside the scope of plugins.
+
 HikePages folder contains all the content for the individual hikes.  The subfolders must start with a year, followed by the title.   The content within a Hiking page must include, .jpgs, write-up, GPX, KML files, etc.   
