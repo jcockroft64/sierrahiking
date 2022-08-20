@@ -1,0 +1,18 @@
+
+
+Tutorial: https://www.youtube.com/watch?v=GK5x_H2CJnE
+In the element, go to Advanced -> Border -> Box Shadow
+You can edit the horizontal/vertical offset, the blur, and the spread. I left all those settings unchanged for now.
+
+The drop shadow for the Master Map works as intended.
+
+I noticed that the tables had padding around them which interfered with the box shadow.
+For the drop shadows for the legend titles, I made these changes:
+
+    Legend tables have inline width
+    Column Horizontal Align = Center
+    For each of the tables, added this inside their <table> tags to remove their bottom padding: style="margin-bottom: 0px;"
+        Before this change, the tables had a bottom padding of 24px. I added 20px of margin to the top of the "Hiking Page Markers" header to replace the padding below the "Master Map Markers" table that was removed for implementing the box shadow.
+        Adding a box shadow is done the same was as doing so for the master map.
+
+I added a drop shadow to the master map, and the legend tables for the master map and hiking page.
