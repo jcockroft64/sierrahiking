@@ -1,0 +1,3 @@
+To add photo to a marker, go to that marker’s edit field and select “Import Media”. From there, select the photo/file/other media you want to include.
+
+I added a photo to each of the map markers of the map
