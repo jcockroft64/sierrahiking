@@ -1,0 +1,3 @@
+The following links describe how to add custom markers and where a repository is located:
+https://mapicons.mapsmarker.com/markers/tourism/camping/
+https://www.mapsmarker.com/kb/user-guide/how-to-add-custom-map-icons
