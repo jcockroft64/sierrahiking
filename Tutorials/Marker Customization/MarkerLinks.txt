@@ -1,3 +1,12 @@
-The following links describe how to add custom markers and where a repository is located:
-https://mapicons.mapsmarker.com/markers/tourism/camping/
-https://www.mapsmarker.com/kb/user-guide/how-to-add-custom-map-icons
+I changed the icons of the map on the Hiking Page Template to match your specifications.
+
+Tutorial for how to add custom icons: https://www.mapsmarker.com/kb/user-guide/how-to-add-custom-map-icons
+Place to get custom icons: https://mapicons.mapsmarker.com/
+To download a given icon, right-click on them and click "save as".
+
+Got the camera icon from here: https://mapicons.mapsmarker.com/markers/media/photo/
+Got the tent icon from here: https://mapicons.mapsmarker.com/markers/tourism/camping/
+
+Select the icon you want by clicking the "change" button for that marker and selecting the icon you want. You have to upload the icons to the site first by choosing the file and then clicking the "upload" button in this area.
+
+Campsites are represented with a green tent icon and points of interest are represented with a grey camera icon.
