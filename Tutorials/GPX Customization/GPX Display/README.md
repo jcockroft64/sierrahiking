@@ -4,11 +4,11 @@ Exporting KML files from Google Earth yields files with no elevation data. Here 
 First, go to this site: https://www.gpsvisualizer.com/convert_input, and select a file to convert.
 Then, go to "Add DEM elevation data:” and select the elevation data to use. I used one based in the U.S., as I figured it be most accurate for our maps.
 
-<1. Options Selected.png>
+<img src = "1. Options Selected.png">
 
 From there, click the convert button, and you should see something like this:
 
-<2. Elevation Data acquired.png>
+<img src = "2. Elevation Data acquired.png">
 
 Here is a line from the resulting file. Notice how the resulting file now has elevation data, as the elevation field isn’t zero.
 ```
