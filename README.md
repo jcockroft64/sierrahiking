@@ -10,3 +10,5 @@ The Notes folder contains any free-form notes that we have.   Significant emails
 The Tutorials folder contains instructions on various aspects of site and feature customization outside the scope of plugins.
 
 HikePages folder contains all the content for the individual hikes.  The subfolders must start with a year, followed by the title.   The content within a Hiking page must include, .jpgs, write-up, GPX, KML files, etc.   
+
+The OpenAI folder contains information about the usage of the OpenAI API as a means to produce a curated hiking list for the user given their age, weight, and length of the hike in days. Also includes the source code for a plugin that generates a frontend form, to which submitting a form invokes a python function that generates a response given the user input into the prompt. OpenAI secret key is not included in the file on this public repo for security purposes.
