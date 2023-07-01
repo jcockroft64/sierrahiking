@@ -1,0 +1,21 @@
+.container {
+    display: flex;
+}
+
+.backpacking-list,
+.food-list {
+    flex: 1;
+    padding: 20px;
+    border: 1px solid #ccc;
+}
+
+.backpacking-list h2,
+.food-list h2 {
+    text-align: center;
+}
+
+.backpacking-list ul,
+.food-list ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
