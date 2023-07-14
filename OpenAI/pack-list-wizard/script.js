@@ -75,24 +75,13 @@ jQuery(document).ready(function($) {
         const season = document.getElementById("season").value;
     
         //elevations
-        //const avg = document.getElementById("avg").value;
-        //const max = document.getElementById("max").value;
-    
         var avg = document.getElementById("avgSlider").value;
         var max =  document.getElementById("maxSlider").value;
     
-        console.log(avg, max);
-    
         const tentCapacity = document.getElementById("tentCapacity").value;
-        console.log("tent capacity: ", tentCapacity);
-    
-        //assume a tent weight of 2.5 lbs per person
-        const tentFactor = 2.5;
-        //if x people are in a tent, purchase an x+1 person tent
-        const tentWeight = tentFactor*(Number(tentCapacity)+1);
     
         const maxWeight = maxPackWeight(age, weight);
-        console.log("max pack weight: ", maxWeight);
+    
         if(maxWeight == error){
             //warn user that people under 10 or over 80 not recommended
             notification("Sorry; we can't produce a backpacking and food list for you. It isn't recommended for people under 10 or over 80 to go backpacking in the Sierra Nevadas.", "error", 5000);
@@ -101,48 +90,72 @@ jQuery(document).ready(function($) {
         //all good. tell user
         notification("Generating backpacking and food lists...", "info", 3000);
     
-        //assume a person eats 2.5 pounds of food per day
-        const foodPerDay = 2.5;
+        //assume a person eats 1.5 pounds of food per day
+        const foodPerDay = 1.5;
         const totalFood = foodPerDay*hikeLength;
     
-        //userQuestion = "Age: " + age + ", Weight: " + weight + ", Length of the Hike: " + hikeLength;
-        userQuestion = "Generate a hiking list for a " + age + "-year-old, " + weight + "-pound person going on a " + hikeLength + "-day hike in the Sierra Nevadas during the " + season +".";
-        userQuestion += " The hike will have an average elevation of " + avg + " feet and a max elevation of " + max + " feet.";
-        userQuestion += " The list should be displayed in 2 columns, with the left column being the item and the right column being its weight in pounds.";
-        userQuestion += " The total weight of all the items, including the backpack, must weigh no more than " + maxWeight + " pounds.";
-        userQuestion += " Food will constitute " + totalFood + " pounds of the total weight of all the items and MUST be in the resulting list as ONE item.";
-        //using 64 oz water bladder as baseline
-        userQuestion += " Water bladder will constitute 4 pounds of the total weight of all the items and MUST be in the resulting list as ONE item.";
-        userQuestion += " Tent will constitute " + tentWeight + " pounds of the total weight of all the items and MUST be in the resulting list as ONE item.";
+        //userQuestion = "Make a " + hikeLength + "-day backpacking list with a total weight not exceeding " + maxWeight + " pounds. Provide a weight distribution for the backpack into 5 major categories: clothing, cooking, sleeping, food, and misc. Please provide the weight of each category."
+        userQuestion = "Provide a weight distribution for a " + hikeLength + "-day backpacking list with a total weight as close to, but not exceeding " + maxWeight + " pounds. Provide a weight distribution for the backpack into 5 major categories: clothing, cooking equipment, sleeping, food, and misc. Please provide the weight of each category."
     
-        if(season=="spring"){
-            userQuestion += " Spring:"
-            userQuestion += " Significant runoff from melting snow, causing swollen streams and rivers."
-            userQuestion += " Increased mosquito activity. MUST include insect repellent."
-            userQuestion += " Presence of snow, especially at higher elevations, making navigation challenging."
-            userQuestion += " Exercise caution when crossing water and consider using mosquito repellent."
-        }
-        else if(season=="fall"){
-            userQuestion += " Fall:"
-            userQuestion += " Water scarcity as smaller streams and creeks may dry up."
-            userQuestion += " Potential supply of snow at higher elevations."
-            userQuestion += " Possibility of a surprise drop in temperatures, especially at night."
-            userQuestion += " water levels tends to be more predictable compared to spring."
-            userQuestion += " insect repellent not needed"
-        }
-    
+        console.log("hello??");
+        //get the text
         addQuestion(userQuestion);
         const prompt = userQuestion + conversation.map(message => `${message.role}: ${message.content}`).join('\n');
-        fetchOpenAI(prompt, "backpack");
+        //fetchOpenAI(prompt, "backpack");
     
-        //prompt to generate food list
-        var foodPrompt = "generate a food list for a " + hikeLength + "-day backpacking hike in the Sierra Nevadas not exceeding " + totalFood + " pounds.";
-        foodPrompt += " The list should be displayed in 2 columns, with the left column being the item and the right column being its weight in pounds.";
+        /*var text = getCategoryWeights(prompt);
+        console.log(text);*/
     
+        (async () => {
+            var text = await getCategoryWeights(prompt);
+            console.log("weights: ", text);
+            // Access the properties of each item object
+            text.forEach(item => {
+                const itemName = Object.keys(item)[0];
+    
+                //for the container id
+                const itemName2 = Object.keys(item)[0].toLowerCase();
+                const noSpaces = itemName2.replace(/\s/g, '');
+    
+                const weight = item[itemName];
+                
+                console.log(`Item: ${itemName}`);
+                console.log(`Weight: ${weight}`);
+                var divName = noSpaces + "-weight";
+    
+                //show the generated weight to the user
+                //document.getElementById(divName).innerText = String(weight) + " pounds";
+    
+                //prompt for category and weight
+                categoryPrompt = "Provide a list of " + itemName + " for a " + hikeLength + "-day backpacking trip with a total weight as close to, but not exceeding " + weight + " pounds. Also provide the weight of each item."
+                
+                //for food, break it down by day
+                if(item=="Food"){
+                    categoryPrompt += " Must be as close to " + weight + " pounds as possible";
+                    categoryPrompt += " Break down the list by day.";
+                }
+                
+                categoryPrompt+= " Also provide the total weight of all the items in this list."
+                fetchOpenAI(categoryPrompt, noSpaces);
+                console.log(categoryPrompt);
+    
+    
+            });
+        })();
         
-        addQuestion(foodPrompt);
-        const foodPromptComplete = foodPrompt + conversation.map(message => `${message.role}: ${message.content}`).join('\n');
-        fetchOpenAI(foodPrompt, "food");
+        
+        /*console.log("stuff will occur below");
+        //get the categories and their weights
+        const regex = /(.+):\s(\d+\.\d+)\spounds/g;
+        let match;
+        while ((match = regex.exec(text)) !== null) {
+            const category = match[1];
+            const weight = parseFloat(match[2]);
+            if (category.toLowerCase() !== "total") {
+                console.log(`Category: ${category}`);
+                console.log(`Weight: ${weight}`);
+            }
+        }*/
     }
     
     function addQuestion(userQuestion){
@@ -156,6 +169,66 @@ jQuery(document).ready(function($) {
     
         // Add user question to the conversation
         conversation.push({ 'role': 'user', 'content': userQuestion });
+    }
+    
+    async function getCategoryWeights(prompt){
+        const body = JSON.stringify({
+            'prompt': prompt,
+            'max_tokens': 400,
+            'temperature': 0.7,
+            'top_p': 1
+        });
+    
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                'Authorization': 'Bearer ' + customFormAjax.api_key,
+                "Content-Type": "application/json"
+            },
+            body: body
+        });
+    
+        if (response.status === 200) {
+            const json = await response.json();
+            console.log(json);
+    
+            // Get the assistant's response
+            const assistantResponse = json.choices[0].text;
+    
+            // Add the assistant's response to the conversation
+            conversation.push({ 'role': 'assistant', 'content': assistantResponse });
+    
+            //document.getElementById(container).innerText = assistantResponse;
+    
+            var newMessage = "Category weights generated successfully!"
+            notification(newMessage, "success", 3000);
+            console.log("response: ", assistantResponse);
+    
+            //regex stuff
+            //get the categories and their weights
+            const regex = /(.+):\s(\d+(?:\.\d+)?)/g; //matches to a "item: weight" format
+            let match;
+            let categoriesList = [];
+            while ((match = regex.exec(assistantResponse)) !== null) {
+                const category = match[1];
+                const weight = parseFloat(match[2]);
+                if (category.toLowerCase() !== "total") {
+                    console.log(`Category: ${category}`);
+                    console.log(`Weight: ${weight}`);
+                    let categoryObject = {}
+                    categoryObject[category] = weight;
+                    categoriesList.push(categoryObject);
+                }
+            }
+            console.log("done")
+            console.log(categoriesList);
+    
+            return categoriesList;
+    
+        } else {
+            notification("Error: " + response.status, "error", 3000);
+            console.log("Error: " + response.status);
+        }
     }
     
     function fetchOpenAI(prompt, container){
@@ -269,35 +342,5 @@ jQuery(document).ready(function($) {
     
         alert(helpText);
     }
-
-    // Function to make API request to ChatGPT
-    function enterInfo2() {
-        // Retrieve form values
-        var age = document.getElementById('age').value;
-        var weight = document.getElementById('weight').value;
-        var hikeLength = document.getElementById('hikeLength').value;
-        var season = document.getElementById('season').value;
-        var avg = document.getElementById('avg').value;
-        var max = document.getElementById('max').value;
-        var tentCapacity = document.getElementById('tentCapacity').value;
-
-        // Construct the user input for the API request
-        var userInput = {
-            age: age,
-            weight: weight,
-            hikeLength: hikeLength,
-            season: season,
-            avg: avg,
-            max: max,
-            tentCapacity: tentCapacity
-        };
-
-        // API request payload
-        var data = {
-            "prompt": JSON.stringify(userInput) + conversation.map(message => `${message.role}: ${message.content}`).join('\n'),
-            "max_tokens": 400,
-            "temperature": 0.7,
-            "top_p": 1
-        };
-    }
+    
 });

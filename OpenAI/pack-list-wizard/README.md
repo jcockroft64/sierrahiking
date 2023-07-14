@@ -7,7 +7,7 @@ The plugin composes of 4 files
 `lists.css`: CSS for displaying the backpacking and food lists.
 `slider.js`: javascript for displaying the value of the slider to the user.
 
-These files are located in `wp-content/plugins/pack-list-wizard` in the Wordpress site and labeled as "Pack List Wizard" in the plugins list in the admin menu. The plugin is inserted into a page via the shortcode `[wizard]`. The source code for the plugin (with sensitive information removed) is included in this repo.
+These files are located in `wp-content/plugins/pack-list-wizard-2` in the Wordpress site and labeled as "Pack List Wizard" in the plugins list in the admin menu. The plugin is inserted into a page via the shortcode `[wizard]`. The source code for the plugin (with sensitive information removed) is included in this repo.
 
 ## Including external files and data
 External files are included via `wp_enqueue_script` which links a Javascript file to the plugin, and `wp_enqueue_style` which links a CSS file to the plugin.
@@ -228,3 +228,17 @@ Simply enter the user's age, weight in pounds, length of the hike in days, prefe
 - their request is valid and the program will produce the lists
 - the lists were produced via OpenAI successfully
 - there was an error in producing the lists via OpenAI
+
+## 7/14 Update: Categorization
+Modified the plugin to do the following:
+- First, ask ChatGPT to provide a weight distribution for an x-day hike with a weight close to, but not exceeding, the max pack weight. Weight is divided in 5 categories:
+	- Clothing
+	- Cooking Equipment
+	- Sleeping Equipment
+	- Food
+	- Other
+- ChatGPT produces a weight for each category. For each category, ask ChatGPT to produce a list of items for that category as close to, but not exceeding, the weight of that category.
+- Results are printed out in 5 columns. Each item has a weight listed with them. The total weight of the category is also displayed. Toast notifications are used to indicate each step of the process (producing category weights, producing each category list)
+
+## Updating Plugin; Caching Issues
+When updating the plugin, I noticed there are odd issues with machine, specifically with the `wizard.js` file. Specifically, the version of the file is June is used, even though it was deleted and replaced with the current version. This is remedied by deleting the folder, re-adding the contents, and changing its name. Perhaps this was a result of the file not being edited for awhile, or perhaps something with the file manager plugin? Unsure about that, but it doesn't need extensive investigation as an easy, effective solution already exists.

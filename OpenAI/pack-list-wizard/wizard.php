@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Pack List Wizard
+Plugin Name: Pack List Wizard 2
 Description: Generates packing list from HTML form and uses ChatGPT API for responses.
-Version: 1.0
+Version: 2.0
 */
 
 // Enqueue JavaScript and CSS files
@@ -96,13 +96,30 @@ function custom_form_generate_form() {
     </form>
 
     <div class="container">
-      <div class="backpacking-list">
-        <h2>Backpacking List</h2>
-        <div id="backpack"></div>
+      <div class="list">
+        <h2>Clothing List</h2>
+        <div id="clothing-weight"></div>
+        <div id="clothing"></div>
       </div>
-      <div class="food-list">
+      <div class="list">
+        <h2>Cooking Equipment</h2>
+        <div id="cookingequipment-weight"></div>
+        <div id="cookingequipment"></div>
+      </div>
+      <div class="list">
+        <h2>Sleeping Equipment</h2>
+        <div id="sleeping-weight"></div>
+        <div id="sleeping"></div>
+      </div>
+      <div class="list">
         <h2>Food List</h2>
+        <div id="food-weight"></div>
         <div id="food"></div>
+      </div>
+      <div class="list">
+        <h2>Other Items</h2>
+        <div id="misc-weight"></div>
+        <div id="misc"></div>
       </div>
     </div>
 
