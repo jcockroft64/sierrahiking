@@ -66,8 +66,254 @@ jQuery(document).ready(function($) {
             timeout: length // Display duration in milliseconds
         }).show();
     }
+
+    //get weight in pounds from total weight of list
+    function extractWeightInPounds(text) {
+        const regex = /\b(\d+(\.\d+)?|\.\d+)\s*(lb|lbs|pound|pounds)\b/i;
+        const match = text.match(regex);
+        if (match) {
+            const weight = parseFloat(match[1]);
+            return weight;
+        }
+        return null;
+    }
+
+    async function getTotalWeight(){
+
+        var clothing = extractWeight("clothing");
+        var cookingequipment = extractWeight("cookingequipment");
+        var sleeping = extractWeight("sleeping");
+        var food = extractWeight("food");
+        var misc = extractWeight("misc");
+
+        console.log("the weights: ", clothing, cookingequipment, sleeping, food, misc);
+        var totalWeight = clothing + cookingequipment + sleeping + food + misc;
+
+        console.log("Your pack weighs", totalWeight, "pounds");
+        //print that on page
+        var headerElement = document.getElementById("totalInsert");
+        headerElement.innerHTML = "";
+        headerElement.innerHTML += totalWeight;
+        headerElement.innerHTML += " pounds";
+        
+    }
+
+    // Function to generate the Misc list
+    async function generateMiscList(miscCategory, conversation, hikeLength) {
+        // Access the properties of the Misc item object
+        const itemName = Object.keys(miscCategory)[0];
+        const weight = miscCategory[itemName];
+
+        console.log(`Item: ${itemName}`);
+        console.log(`Weight: ${weight}`);
+
+        // Now you have the "Misc" object, and you can process it further if needed.
+        var userQuestion = "Provide a list of other items for a " + hikeLength + "-day backpacking trip with a total weight as close to, but not exceeding " + weight + " pounds, but at least" + 0.9*weight + " pounds. Also provide the weight of each item. Also provide the total weight of all the items in this list."
+        
+        userQuestion+=" This list should only include items not in the clothing, cooking, sleeping, or food lists previously generated";
+        //userQuestion += "\n\nThis list should only include items not included in the following previous lists:\n" + previousListsContext;
+
+        console.log(userQuestion);
+
+        //wait for OpenAI stuff to complete before next function can run
+        await fetchOpenAI(userQuestion, "misc")
+    }
+
+    //function to generate the category prompt
+    function generateCategoryPrompt(itemName, hikeLength, weight) {
+        let categoryPrompt = "Provide a list of " + itemName + " for a " + hikeLength + "-day backpacking trip with a total weight as close to, but not exceeding " + weight + " pounds, but at least " + 0.9 * weight + " pounds. Also provide the weight of each item.";
     
-    function enterInfo(){
+        if (itemName === "Food") {
+            categoryPrompt += " Must be as close to " + weight + " pounds as possible.";
+            categoryPrompt += " There must be between 1 and " + (weight / hikeLength).toFixed(2) + " pounds of food per day. No less.";
+    
+            const diet = document.getElementById('dietary-preference').value;
+            if (diet === "vegetarian" || diet === "vegan") {
+                categoryPrompt += " Food list must follow a " + diet + " diet.";
+            }
+    
+            categoryPrompt += " Break down the list by day and provide the total weight of food for each given day.";
+            categoryPrompt += " Also provide the total weight of each of the day's food.";
+            const tokens = 400 * Math.ceil(hikeLength / 3);
+            //3 days = 400*1, 6 = 400*2, etc
+        } else {
+            categoryPrompt += " Also provide the total weight of all the items in this list.";
+        }
+    
+        return categoryPrompt;
+    }
+
+    // Function to check if a value is less than a threshold
+    function isLessThan(value, threshold) {
+        //return parseFloat(value) < threshold;
+        return Number(value) < Number(threshold);
+    }
+    
+    function extractWeight(id){
+        var clothing = document.getElementById(id).innerText.toLowerCase();
+        var clothingText = clothing.slice(clothing.lastIndexOf('total weight'));
+        console.log(clothingText);
+        var clothingWeight = extractWeightInPounds(clothingText);
+        console.log(clothingWeight);
+        return clothingWeight;
+    }
+
+    /*async function checkCategoryWeights(categoriesToGenerate, hikeLength){
+
+        var clothingWeight = extractWeight("clothing");
+        var cookingWeight = extractWeight("cookingequipment");
+        var sleepingWeight = extractWeight("sleeping");
+        var foodWeight = extractWeight("food");
+
+        console.log(categoriesToGenerate);
+
+        // Compare and check the fields
+        categoriesToGenerate.forEach(obj => {
+            const key = String(Object.keys(obj)[0]);
+            console.log(key);
+            const value = obj[key];
+            console.log(value);
+            var tokens = 400;
+            
+            if (key === 'Food') {
+                if (foodWeight<hikeLength) {
+                    console.log(`Food (${foodWeight}) is less than ${hikeLength}.`);
+                    categoryPrompt = "The food list previously generated isn't heavy enough. ";
+                    categoryPrompt += generateCategoryPrompt(key, hikeLength, value);
+                    notification("Insufficient weight for food list. Regenerating list...", error, 5000);
+                    fetchOpenAI(categoryPrompt, "food", tokens);
+                    console.log(categoryPrompt);
+                }
+            }
+            else if (key === "Clothing"){
+                console.log("this is clothing");
+                if (isLessThan(clothingWeight, 0.8*value)) {
+                    console.log(`Clothing (${foodWeight}) is less than 0.8 times ${value}.`);
+                    categoryPrompt = "The clothing list previously generated isn't heavy enough. ";
+                    categoryPrompt += generateCategoryPrompt(key, hikeLength, value);
+                    notification("Insufficient weight for clothing list. Regenerating list...", error, 5000);
+                    fetchOpenAI(categoryPrompt, "clothing", tokens);
+                    console.log(categoryPrompt);
+                }
+            }
+
+            else if (key === "Sleeping"){
+                console.log("this is sleeping");
+                if (isLessThan(sleepingWeight, 0.8*value)) {
+                    console.log(`Sleeping (${sleepingWeight}) is less than 0.8 times ${value}.`);
+                    categoryPrompt = "The sleeping list previously generated isn't heavy enough. ";
+                    categoryPrompt += generateCategoryPrompt(key, hikeLength, value);
+                    notification("Insufficient weight for sleeping list. Regenerating list...", error, 5000);
+                    fetchOpenAI(categoryPrompt, "sleeping", tokens);
+                    console.log(categoryPrompt);
+                    
+                }
+            }
+
+            else{
+                console.log("this item is cooking");
+                if (isLessThan(cookingWeight, 0.8*value)) {
+                    console.log(`Cooking (${cookingWeight}) is less than 0.8 times ${value}.`);
+                    categoryPrompt = "The cooking equipment list previously generated isn't heavy enough. ";
+                    categoryPrompt += generateCategoryPrompt(key, hikeLength, value);
+                    notification("Insufficient weight for cooking list. Regenerating list...", error, 5000);
+                    fetchOpenAI(categoryPrompt, "cookingequipment", tokens);
+                    console.log(categoryPrompt);
+                }
+            }
+        });
+    }*/
+
+    async function checkCategoryWeights(categoriesToGenerate, hikeLength) {
+        var clothingWeight = extractWeight("clothing");
+        var cookingWeight = extractWeight("cookingequipment");
+        var sleepingWeight = extractWeight("sleeping");
+        var foodWeight = extractWeight("food");
+    
+        console.log(categoriesToGenerate);
+    
+        // Compare and check the fields
+        const updatePromises = categoriesToGenerate.map(async obj => {
+            const key = String(Object.keys(obj)[0]);
+            console.log(key);
+            const value = obj[key];
+            console.log(value);
+            var tokens = 400;
+    
+            if (key === 'Food') {
+                if (foodWeight < hikeLength) {
+                    console.log(`Food (${foodWeight}) is less than ${hikeLength}.`);
+                    categoryPrompt = "The food list previously generated isn't heavy enough. ";
+                    categoryPrompt += generateCategoryPrompt(key, hikeLength, value);
+                    notification("Insufficient weight for food list. Regenerating list...", error, 5000);
+                    await fetchOpenAI(categoryPrompt, "food", tokens);
+                    console.log(categoryPrompt);
+                }
+            } else if (key === "Clothing") {
+                console.log("this is clothing");
+                if (isLessThan(clothingWeight, 0.8 * value)) {
+                    console.log(`Clothing (${foodWeight}) is less than 0.8 times ${value}.`);
+                    categoryPrompt = "The clothing list previously generated isn't heavy enough. ";
+                    categoryPrompt += generateCategoryPrompt(key, hikeLength, value);
+                    notification("Insufficient weight for clothing list. Regenerating list...", error, 5000);
+                    await fetchOpenAI(categoryPrompt, "clothing", tokens);
+                    console.log(categoryPrompt);
+                }
+            } else if (key === "Sleeping") {
+                console.log("this is sleeping");
+                if (isLessThan(sleepingWeight, 0.8 * value)) {
+                    console.log(`Sleeping (${sleepingWeight}) is less than 0.8 times ${value}.`);
+                    categoryPrompt = "The sleeping list previously generated isn't heavy enough. ";
+                    categoryPrompt += generateCategoryPrompt(key, hikeLength, value);
+                    notification("Insufficient weight for sleeping list. Regenerating list...", error, 5000);
+                    await fetchOpenAI(categoryPrompt, "sleeping", tokens);
+                    console.log(categoryPrompt);
+                }
+            } else {
+                console.log("this item is cooking");
+                if (isLessThan(cookingWeight, 0.8 * value)) {
+                    console.log(`Cooking (${cookingWeight}) is less than 0.8 times ${value}.`);
+                    categoryPrompt = "The cooking equipment list previously generated isn't heavy enough. ";
+                    categoryPrompt += generateCategoryPrompt(key, hikeLength, value);
+                    notification("Insufficient weight for cooking list. Regenerating list...", error, 5000);
+                    await fetchOpenAI(categoryPrompt, "cookingequipment", tokens);
+                    console.log(categoryPrompt);
+                }
+            }
+        });
+    
+        // Return a Promise that resolves when all the category weights have been updated
+        return Promise.all(updatePromises);
+    }    
+
+    async function checkMiscWeight(miscCategory, hikeLength){
+        var miscWeight = extractWeight("misc");
+        
+        console.log(miscCategory);
+
+        const miscKey = Object.keys(miscCategory)[0];
+        const miscValue = miscCategory[miscKey];
+        if (isLessThan(miscWeight, 0.8*miscValue)) {
+            console.log(`Misc (${miscWeight}) is less than 0.8 times ${miscValue}.`);
+            // Now you have the "Misc" object, and you can process it further if needed.
+            var userQuestion = "The misc list previously generated isn't heavy enough. ";
+            userQuestion += "Provide a list of other items for a " + hikeLength + "-day backpacking trip with a total weight as close to, but not exceeding " + miscValue + " pounds, but at least" + 0.9*weight + " pounds. Also provide the weight of each item. Also provide the total weight of all the items in this list."
+            
+            userQuestion+=" This list should only include items not in the clothing, cooking, sleeping, or food lists previously generated";
+            //userQuestion += "\n\nThis list should only include items not included in the following previous lists:\n" + previousListsContext;
+
+            console.log(userQuestion);
+
+            notification("Insufficient weight for misc list. Regenerating list...", error, 5000);
+
+            //wait for OpenAI stuff to complete before next function can run
+            await fetchOpenAI(userQuestion, "misc")
+        }
+        // Return a Promise that resolves when the "Misc" category weight has been updated
+        return Promise.resolve();
+    }
+    
+    async function enterInfo(){
         const age = document.getElementById("age").value;
         const weight = document.getElementById("weight").value;
         const hikeLength = document.getElementById("hikeLength").value;
@@ -98,6 +344,7 @@ jQuery(document).ready(function($) {
         userQuestion = "Provide a weight distribution for a " + hikeLength + "-day backpacking list with a total weight as close to, but not exceeding " + maxWeight + " pounds. Provide a weight distribution for the backpack into 5 major categories: clothing, cooking equipment, sleeping, food, and misc. Please provide the weight of each category."
     
         console.log("hello??");
+        console.log(maxWeight);
         //get the text
         addQuestion(userQuestion);
         const prompt = userQuestion + conversation.map(message => `${message.role}: ${message.content}`).join('\n');
@@ -107,10 +354,18 @@ jQuery(document).ready(function($) {
         console.log(text);*/
     
         (async () => {
+            // Array to store the category prompts
+            const promptList = [];
             var text = await getCategoryWeights(prompt);
             console.log("weights: ", text);
+    
+            // Filter out the "Misc" category from the text array and keep it in a variable
+            const miscCategory = text.find(item => Object.keys(item)[0] === "Misc");
+            const categoriesToGenerate = text.filter(item => Object.keys(item)[0] !== "Misc");
+    
             // Access the properties of each item object
-            text.forEach(item => {
+            categoriesToGenerate.forEach(item => {
+                let tokens = 400; //400 tokens by default; increased for food
                 const itemName = Object.keys(item)[0];
     
                 //for the container id
@@ -123,24 +378,37 @@ jQuery(document).ready(function($) {
                 console.log(`Weight: ${weight}`);
                 var divName = noSpaces + "-weight";
     
-                //show the generated weight to the user
-                //document.getElementById(divName).innerText = String(weight) + " pounds";
-    
-                //prompt for category and weight
-                categoryPrompt = "Provide a list of " + itemName + " for a " + hikeLength + "-day backpacking trip with a total weight as close to, but not exceeding " + weight + " pounds. Also provide the weight of each item."
-                
-                //for food, break it down by day
-                if(item=="Food"){
-                    categoryPrompt += " Must be as close to " + weight + " pounds as possible";
-                    categoryPrompt += " Break down the list by day.";
-                }
-                
-                categoryPrompt+= " Also provide the total weight of all the items in this list."
-                fetchOpenAI(categoryPrompt, noSpaces);
+                categoryPrompt = generateCategoryPrompt(itemName, hikeLength, weight);
+
+                //fetchOpenAI(categoryPrompt, noSpaces);
+                promptList.push(fetchOpenAI(categoryPrompt, noSpaces, tokens));
                 console.log(categoryPrompt);
-    
-    
             });
+    
+            // Wait for all the category prompts to be processed
+            await Promise.all(promptList);
+    
+            console.log(promptList);
+    
+            //message history. "system" and "user" texts (the first 2) are not part of the packing lists, but part of the context.
+            //next is the weights
+            //the final 4 prompts are from the food lists. use that as context for ChatGPT of what items NOT to include for the other items
+            console.log(conversation);
+    
+            // Generate the Misc list separately after the first four lists are generated
+            await generateMiscList(miscCategory, conversation, hikeLength);
+
+             // Call the functions and wait for all the category weights to be updated
+            await Promise.all([
+                //check the weight of all categories before misc
+                checkCategoryWeights(categoriesToGenerate, hikeLength),
+                //check misc weight
+                checkMiscWeight(miscCategory, hikeLength)
+            ]);
+
+            //get total weight
+            await getTotalWeight();
+            
         })();
         
         
@@ -230,83 +498,49 @@ jQuery(document).ready(function($) {
             console.log("Error: " + response.status);
         }
     }
-    
-    function fetchOpenAI(prompt, container){
-        // Make POST request to the ChatGPT API endpoint
-        // API request payload
-        var data = {
+
+    function fetchOpenAI(prompt, container) {
+        // Create a Deferred object
+        const deferred = $.Deferred();
+      
+        $.ajax({
+          type: 'POST',
+          url: 'https://api.openai.com/v1/engines/text-davinci-003/completions',
+          headers: {
+            'Authorization': 'Bearer ' + customFormAjax.api_key,
+            'Content-Type': 'application/json'
+          },
+          data: JSON.stringify({
             'prompt': prompt,
             'max_tokens': 600,
             'temperature': 0.7,
             'top_p': 1
-        };
-        $.ajax({
-            type: 'POST',
-            url: 'https://api.openai.com/v1/engines/text-davinci-003/completions',
-            headers: {
-                'Authorization': 'Bearer ' + customFormAjax.api_key,
-                'Content-Type': 'application/json'
-            },
-            data: JSON.stringify(data),
-            success: function(response) {
-                // Handle the API response
-                var assistantResponse = response.choices[0].text.trim();
-
-                // Add the assistant's response to the conversation
-                conversation.push({ 'role': 'assistant', 'content': assistantResponse });
-
-                //display response
-                document.getElementById(container).innerText = assistantResponse;
-
-                //notify success
-                var newMessage = capitalizeFirstLetter(container) + " list generated successfully!"
-                notification(newMessage, "success", 3000);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log('Error: ' + textStatus, errorThrown);
-                notification("Error: " + textStatus + " " + errorThrown, "error", 3000);
-                //notify error
-            }
-        });
-    }
-    async function fetchOpenAI2(prompt, container) {
-        const body = JSON.stringify({
-            'prompt': prompt,
-            'max_tokens': 400,
-            'temperature': 0.7,
-            'top_p': 1
-        });
-    
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Authorization": bearer,
-                "Content-Type": "application/json"
-            },
-            body: body
-        });
-    
-        if (response.status === 200) {
-            const json = await response.json();
-            console.log(json);
-    
-            // Get the assistant's response
-            const assistantResponse = json.choices[0].text;
-    
-            // Add the assistant's response to the conversation
+          }),
+          success: function(response) {
+            const assistantResponse = response.choices[0].text.trim();
+      
             conversation.push({ 'role': 'assistant', 'content': assistantResponse });
-    
-            // Create a new paragraph element for the assistant's response
-            const responseElement = document.createElement('p');
-            responseElement.innerText = `Assistant: ${assistantResponse}`;
-    
-            // Append the response element to the response container
-            const responseContainer = document.getElementById(container);
-            responseContainer.appendChild(responseElement);
-        } else {
-            console.log("Error: " + response.status);
-        }
-    }
+            document.getElementById(container).innerText = assistantResponse;
+      
+            var newMessage = capitalizeFirstLetter(container) + " list generated successfully!"
+            notification(newMessage, "success", 3000);
+      
+            // Resolve the Deferred object to signal successful completion
+            deferred.resolve();
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            console.log('Error: ' + textStatus, errorThrown);
+            notification("Error: " + textStatus + " " + errorThrown, "error", 3000);
+      
+            // Reject the Deferred object to signal an error
+            deferred.reject(errorThrown);
+          }
+        });
+      
+        // Return the Deferred object
+        return deferred;
+      }
+      
     
     //function for relevant help text
     function showHelp(field) {
@@ -342,5 +576,11 @@ jQuery(document).ready(function($) {
     
         alert(helpText);
     }
+
+    // Attach event handlers using event delegation
+    $(document).on('click', '.button', function() {
+        var field = $(this).data('field');
+        showHelp(field);
+    });
     
 });

@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Pack List Wizard 2
-Description: Generates packing list from HTML form and uses ChatGPT API for responses.
-Version: 2.0
+Plugin Name: Pack List Wizard 3
+Description: Generates packing list from HTML form and uses ChatGPT API for responses. Improved prompts!
+Version: 3.0
 */
 
 // Enqueue JavaScript and CSS files
@@ -42,55 +42,75 @@ function custom_form_generate_form() {
     <div id="responseContainer"></div>
 
     <form id="infoForm" action="" method="post">
-        <h2>Hiker Information</h2>
-        <label for="age">Age:</label>
-        <input type="text" id="age" placeholder="Enter age" required>
-        <button class="help-button" onclick="showHelp('age')">?</button><br>
+      <label for="age">Age:</label>
+      <input type="text" id="age" placeholder="Enter age" required>
+      <!-- <button class="help-button" onclick="showHelp('age')">?</button><br> -->
+      <div class="button" data-field="age">?</div><br>
 
-        <label for="weight">Weight:</label>
-        <input type="text" id="weight" placeholder="Enter weight" required>
-        <button class="help-button" onclick="showHelp('weight')">?</button><br>
+      <label for="weight">Weight:</label>
+      <input type="text" id="weight" placeholder="Enter weight" required>
+      <!-- <button class="help-button" onclick="showHelp('weight')">?</button><br> -->
+      <div class="button" data-field="weight">?</div><br>
 
-        <label for="hikeLength">Length of Hike:</label>
-        <input type="text" id="hikeLength" placeholder="Enter length of the hike">
-        <button class="help-button" onclick="showHelp('hikeLength')">?</button><br>
+      <label for="hikeLength">Length of Hike:</label required>
+      <input type="text" id="hikeLength" placeholder="Enter length of the hike">
+      <!-- <button class="help-button" onclick="showHelp('hikeLength')">?</button><br> -->
+      <div class="button" data-field="hikeLength">?</div><br>
 
-        <label for="season">Preferred Season:</label>
-        <select id="season" name="season" required>
-            <option value="spring">Spring</option>
-            <option value="summer">Summer</option>
-            <option value="fall">Fall</option>
-            <option value="winter">Winter</option>
-        </select>
-        <button class="help-button" onclick="showHelp('season')">?</button><br>
+      <label for="season">Preferred Season:</label>
+      <select id="season" name="season" required>
+        <option value="spring">Spring</option>
+        <option value="summer">Summer</option>
+        <option value="fall">Fall</option>
+        <option value="winter">Winter</option>
+      </select>
+      <!-- <button class="help-button" onclick="showHelp('season')">?</button><br> -->
+      <div class="button" data-field="season">?</div><br>
 
-        <label for="avg">Average Elevation: <output id="avgOutput">1000</output></label>
-        <button class="help-button" onclick="showHelp('avg')">?</button>
-        <span id="avgMin">1000</span>
-        <input type="range" id="avgSlider" min="1000" max="15000" value="1000" oninput="updateAvgOutput()">
-        <span id="avgMax">15000</span><br>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.1/nouislider.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.1/nouislider.min.js"></script>
 
-        <label for="max">Max Elevation: <output id="maxOutput">1000</output></label>
-        <button class="help-button" onclick="showHelp('max')">?</button>
-        <span id="maxMin">1000</span>
-        <input type="range" id="maxSlider" min="1000" max="15000" value="1000" oninput="updateMaxOutput()">
-        <span id="maxMax">15000</span><br>
+      
+      <label for="avg" style="display: inline-block; width: 170px;">Average Elevation: <output id="avgOutput">0</output></label>
+      <!-- <button class="help-button" onclick="showHelp('avg')">?</button> -->
+      <div class="button" data-field="avg">?</div>
+      <span id="avgMin">0</span>
+      <input type="range" id="avgSlider" min="0" max="15000" value="0" oninput="updateAvgOutput()">
+      <span id="avgMax">15000</span><br>
 
-        <label for="tentCapacity">Number of people in your tent:</label>
-        <select id="tentCapacity" name="tentCapacity">
-            <!-- Generate the options dynamically -->
-            <script>
-                var maxCapacity = 10;
-                for (var i = 1; i <= maxCapacity; i++) {
-                    document.write('<option value="' + i + '">' + i + '</option>');
-                }
-                document.write('<option value="' + (maxCapacity + 1) + '">' + maxCapacity + '+</option>');
-            </script>
-        </select>
-        <button class="help-button" onclick="showHelp('tentCapacity')">?</button>
-        <br><br>
+      <label for="max" style="display: inline-block; width: 170px;">Max Elevation: <output id="maxOutput">0</output></label>
+      <!-- <button class="help-button" onclick="showHelp('max')">?</button> -->
+      <div class="button" data-field="max">?</div>
+      <span id="maxMin">0</span>
+      <input type="range" id="maxSlider" min="0" max="15000" value="0" oninput="updateMaxOutput()">
+      <span id="maxMax">15000</span><br>
+      
+      <label for="tentCapacity">Number of people in your tent:</label>
+      <select id="tentCapacity" name="tentCapacity">
+        <!-- Generate the options dynamically -->
+        <script>
+          var maxCapacity = 10;
+          for (var i = 1; i <= maxCapacity; i++) {
+            document.write('<option value="' + i + '">' + i + '</option>');
+          }
+          document.write('<option value="' + (maxCapacity + 1) + '">' + maxCapacity + '+</option>');
+        </script>
+      </select>
+      <!-- <button class="help-button" onclick="showHelp('tentCapacity')">?</button> -->
+      <div class="button" data-field="tentCapacity">?</div><br>
 
-        <input type="submit" value="Submit">
+      <label for="dietary-preference">Diet Restrictions/Preference</label>
+      <select id="dietary-preference">
+          <option value="flexible" selected>No Dietary Restrictions (Flexible)</option>
+          <option value="vegetarian">Vegetarian</option>
+          <option value="vegan">Vegan</option>
+      </select>
+      <!-- <button class="help-button" onclick="showHelp('diet')">?</button> -->
+      <div class="button" data-field="diet">?</div><br>
+
+      <br>
+
+      <input type="submit" value="Submit">
 
 
     </form>
@@ -112,14 +132,22 @@ function custom_form_generate_form() {
         <div id="sleeping"></div>
       </div>
       <div class="list">
+        <h2>Other Items</h2>
+        <div id="misc-weight"></div>
+        <div id="misc"></div>
+      </div>
+    </div>
+    <div class = "container">
+      <div class="list">
         <h2>Food List</h2>
         <div id="food-weight"></div>
         <div id="food"></div>
       </div>
-      <div class="list">
-        <h2>Other Items</h2>
-        <div id="misc-weight"></div>
-        <div id="misc"></div>
+    </div>
+    <div class = "container">
+      <div class = "list">
+        <h2 id="total">Total Weight</h2>
+        <h2 id="totalInsert"></h2>
       </div>
     </div>
 
