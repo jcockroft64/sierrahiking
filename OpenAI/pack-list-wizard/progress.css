@@ -1,0 +1,35 @@
+#myProgress {
+  width: 100%;
+  background-color: #C4A484;
+  margin-bottom: 10px;
+  border: 1px solid #8C714D;
+  border-radius: 5px;
+}
+
+#myBar {
+  width: 0%;
+  height: 30px;
+  background-color: #04AA6D;
+  transition: width 0.5s ease; /* Add transition for smooth animation */
+  text-align: center;
+  line-height: 30px;
+  color: white;
+}
+
+/* Loading spinner animation */
+.loader {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 4px solid #4caf50;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

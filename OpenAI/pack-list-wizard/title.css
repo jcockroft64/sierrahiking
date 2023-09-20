@@ -1,0 +1,26 @@
+.entry-title {
+    padding-top:30px !important;
+}
+
+.entry-title:after{
+    display:none !important;
+}
+
+.container {
+    display: flex;
+}
+
+.sidebar {
+    flex: 0 0 auto; /* Prevent sidebar from growing */
+}
+
+.content {
+    flex: 1; /* Allow content to grow and take available space */
+    display: flex;
+    flex-direction: column;
+}
+
+.elementor-shortcode{
+    position: relative;
+    top: -50px; /* Adjust the value as needed */
+}

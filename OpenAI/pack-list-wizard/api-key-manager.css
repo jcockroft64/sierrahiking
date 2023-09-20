@@ -1,0 +1,10 @@
+/* center content of tables */
+table{
+    text-align: center;
+}
+
+/**styling for label of hiker sumamry */
+.label {
+    color: #A58A60;
+    font-weight: bold;
+}

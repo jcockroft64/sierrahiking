@@ -1,0 +1,267 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  height: 100vh;
+}
+
+.container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  height: 100vh; /* Adjust the container height to take up 100% of viewport height */
+}
+
+.sidebar {
+  width: 200px;
+  background-color: #333;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  z-index: 2;
+  height: 100%; /* Sidebar takes up full height of container */
+}
+
+.hamburger {
+  display: none;
+  position: fixed;
+  top: 15px;
+  left: 10px;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+.sidebar-title {
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+}
+
+.sidebar-title:hover {
+  background-color: #555;
+}
+
+.content {
+  padding: 20px;
+  width: calc(100% - 200px);
+  background-color: #f0f0f0;
+  border-left: 1px solid #ddd;
+  flex: 1;
+  overflow-y: auto;
+  z-index: 1;
+  position: relative;
+}
+
+.section-content {
+  display: none;
+  padding: 20px;
+}
+
+.section-content.active {
+  display: block;
+}
+
+.header {
+  display: none;
+  background-color: #333;
+  color: white;
+  padding: 15px;
+}
+
+@media (min-width: 769px) {
+  .sidebar-menu{
+    padding-top:40px;
+  }
+}
+
+/* Media query for mobile devices (adjust the max-width as needed) */
+@media screen and (max-width: 767px) {
+  .header{
+    background-color: transparent;
+  }
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    padding-top:70px;
+    padding-left:20px;
+    display: block;
+    color: #8C714D;
+  }
+
+  .header {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    display: none;
+    background-color: #333;
+    color: white;
+    z-index: 1000;
+    overflow-y: auto;
+    height: auto;
+  }
+
+  .content {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .sidebar.active {
+    display: flex;
+  }
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.tab {
+  flex: 1; /* Distribute available space equally among tabs */
+  padding: 10px 0; /* Remove horizontal padding to eliminate space between tabs */
+  cursor: pointer;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  background-color: #f9f9f9;
+  border-radius: 5px 5px 0 0;
+  display: flex; /* Use flexbox to center text */
+  justify-content: center; /* Center text horizontally */
+  align-items: center; /* Center text vertically */
+}
+
+/* Adjust the font size for smaller screens */
+@media (max-width: 768px) {
+  .tab {
+    padding: 5px 0 !important; /* Remove horizontal padding for smaller screens */
+    font-size: 10px;
+  }
+}
+
+.tab:last-child {
+  margin-right: 0;
+}
+
+.tab.active {
+  background-color: white;
+  border-color: #ccc;
+  border-bottom: 1px solid white;
+}
+
+.tabcontent {
+  display: none;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 0 0 5px 5px;
+}
+
+.tabcontent.active {
+  display: block;
+}
+
+/* Configuration settings layout */
+.config-settings {
+  margin-bottom: 20px;
+}
+
+.config-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.config-title {
+  flex: 1;
+  padding-left:22px;
+}
+
+.fa{
+  width:15px;
+}
+
+.config-field {
+  flex: 2;
+  text-align: right; /* Right justify the config field */
+}
+
+/* Highlight the selected sidebar menu option */
+.selected {
+  background-color: #555;
+}
+
+.submit-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+}
+
+.submit {
+  margin-top: 12px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: DodgerBlue;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: normal; /* Set the initial font-weight */
+  transition: font-weight 0.3s ease; /* Add a smooth transition effect */
+}
+
+/* Darker background on mouse-over */
+.submit:hover {
+  background-color: RoyalBlue;
+  font-weight: bold; /* Change font-weight on hover */
+
+}
+
+.output-container {
+  width: 300px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: auto;
+}
+
+#avgMin, #maxMin {
+  text-align: left;
+}
+
+#avgOutput, #maxOutput {
+  text-align: center;
+}
+
+#avgMax, #maxMax {
+  text-align: right;
+}
+
+input.elevation{
+  width:300px;
+}
+
+/*mobile stuff for sliders*/
+@media (max-width: 768px) {
+  .output-container {
+    width: 100px;
+  }
+  input.elevation{
+    width:100px;
+  }
+}
