@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Pack List Wizard
  * Description: Generates packing list from HTML form and uses ChatGPT API for responses. Improved prompts! Supports list export as CSV! Lists saved as JSON for straightforward display on page and conversion to CSV. More secure API key storage via Zuplo!
- * Version: 31.0
+ * Version: 43.0
  */
 
 // Enqueue JavaScript and CSS files
@@ -67,6 +67,7 @@ function custom_form_generate_form() {
           <div class="sidebar-title selected" id="configTitle">Configuration</div>
           <div class="sidebar-title" id="recommendationsTitle">Recommendations</div>
           <div class="sidebar-title" id="summaryTitle">Summary</div>
+          <div class="sidebar-title" id="aboutTitle">About</div>
         </div>
       </div>
       <div class="content" id="content">
@@ -229,6 +230,9 @@ function custom_form_generate_form() {
           <div id="during" style="display:none">
               <p>Generating recommendation lists. Please wait.</p>
           </div>
+          <div id="error" style="display:none">
+              <p>An error occured. Please check the recomendations tabs for more information and make the neccesary corrections in the hiker form.</p>
+          </div>
           <div id="complete" style="display:none">
               <!-- Download Button -->
               <div class="parent-div">
@@ -242,14 +246,23 @@ function custom_form_generate_form() {
               <div id="hiker-container"></div>
 
               <!-- Total Weight and Price-->
-              <h4 id="total">Total Weight & Price</h4>
+              <h4 id="total">Total Weight & Cost</h4>
               <div id="total-container"></div>
 
               <!-- Weight and Price Summary-->
-              <h4>Weight & Price Summary</h4>
+              <h4>Weight & Cost Summary</h4>
               <div id="table-container"></div>
+
+              <h4 id="total">Daily Food Summary</h4>
+              <div id="calorie-container"></div>
           </div>
           
+        </div>
+        <div id="aboutContent" class="section-content">
+          <p>About:</p>
+          <p>Pack List Wizard 0.9</p>
+          <p>December 20, 2023</p>
+          <p>Developed by the engineers at <a href="https://sierrahiking.net">SierraHiking.net</a></p>
         </div>
       </div>
     </div>

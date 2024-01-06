@@ -78,13 +78,13 @@ function convertFoodJSONtoCSV(jsonData) {
           [day].join(separator),
           ...mealKeys.map(mealKey => {
               const mealData = item[mealKey];
-              return [mealData.Item, mealData.Weight, mealData.Price].join(separator);
+              return [mealData.Item, mealData.Weight, mealData.Price, mealData.Calories].join(separator);
           })
       ];
   });
 
   // Create a row for totalWeight and totalPrice
-  const totalRow = ["Total", jsonData.totalWeight, jsonData.totalPrice].join(separator);
+  const totalRow = ["Total", jsonData.totalWeight, jsonData.totalPrice, jsonData.totalCalories].join(separator);
 
   // Combine data rows and add the total row
   const csvContent = [dataRows.join('\n'), totalRow].join('\n');
@@ -116,6 +116,17 @@ function json2csv(jsonData) {
   return csvContent;
 }
 
+function calorieCSV(dayCalories) {
+  let csvContent = 'Day,Weight,Cost,Calories\n'; // Header row
+
+  // Loop through each object in the array and create a CSV row
+  dayCalories.forEach(entry => {
+    csvContent += `${entry.Day},${entry.Weight},${entry.Price},${entry.Calories}\n`;
+  });
+
+  return csvContent;
+}
+
 /**function to generate the csv given json objects */
 function generateTables() {
   const hikerInfo = generateHikerInfo() + '\n\n';
@@ -124,13 +135,14 @@ function generateTables() {
   var cookingCSV = 'Cooking\n' + json2csv(cookingJson) + '\n\n';
   var sleepingCSV = 'Sleeping\n' + json2csv(sleepingJson) + '\n\n';
   var foodCSV = 'Food\n' + convertFoodJSONtoCSV(foodJson) + '\n\n';
+  var caloriesCSV = "Calorie\n" + calorieCSV(dayCalories) + '\n\n';
   var miscCSV = 'Miscellaneous\n' + json2csv(miscJson) + '\n\n';
 
   //var totalRow = "Total, Total Weight, Total Price\n," + globalTotalWeight + ", $" + globalTotalPrice;
   const totalRow = `"Total","${globalTotalWeight}lbs","$${globalTotalPrice}"`;
 
 
-  var combinedCSV = hikerInfo + clothingCSV + cookingCSV + sleepingCSV + foodCSV + miscCSV + totalRow;
+  var combinedCSV = hikerInfo + clothingCSV + cookingCSV + sleepingCSV + foodCSV + caloriesCSV + miscCSV + totalRow;
   
   console.log(combinedCSV);
   downloadCSV(combinedCSV);

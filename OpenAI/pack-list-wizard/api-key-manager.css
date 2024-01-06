@@ -1,5 +1,5 @@
 /* center content of tables */
-table{
+table {
     text-align: center;
 }
 
@@ -7,4 +7,92 @@ table{
 .label {
     color: #A58A60;
     font-weight: bold;
+}
+
+/*styling for tables*/
+.small-text {
+    font-size: small;
+    color: grey;
+}
+
+th {
+    vertical-align: top !important;
+}
+
+/*css for the food weight/price/calorie summary table*/
+.auto-width-table {
+    width: auto !important;
+}
+
+.auto-width-table td,
+.auto-width-table th {
+    padding: 10px !important;
+    /* Adjust the value as needed */
+}
+
+/* Bold text for the first row in tables with class "auto-width-table" */
+.auto-width-table td:first-child {
+    font-weight: bold;
+}
+
+/* Style for right-justified ingredients in tables */
+#cookingTable td:first-child,
+#clothingTable td:first-child,
+#sleepingTable td:first-child,
+#miscTable td:first-child {
+    text-align: left !important;
+}
+
+/* Padding for the second column table headers */
+#cookingTable th:nth-child(2),
+#clothingTable th:nth-child(2),
+#sleepingTable th:nth-child(2),
+#miscTable th:nth-child(2) {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+/* Bold text for the last row in each table */
+#cookingTable tr:last-child,
+#clothingTable tr:last-child,
+#sleepingTable tr:last-child,
+#miscTable tr:last-child {
+    font-weight: bold;
+}
+
+/* Padding for all table cells in the specified tables */
+#cookingTable td,
+#clothingTable td,
+#sleepingTable td,
+#miscTable td {
+    padding-right: 10px !important;
+    padding-left: 10px !important;
+}
+
+/* Remove excessive whitespace for all tables */
+#cookingTable,
+#clothingTable,
+#sleepingTable,
+#miscTable {
+    table-layout: fixed;
+    width: auto;
+    border-collapse: collapse;
+    margin: auto;
+    /* Center within its div */
+}
+
+/* Media query for mobile devices */
+@media only screen and (max-width: 767px) {
+
+    /* Styles for tables on mobile devices */
+    table {
+        font-size: 10px;
+        /* Adjust the font size for mobile devices */
+    }
+
+    /* Styles for elements with the class "small-text" on mobile devices */
+    .small-text {
+        font-size: 8px;
+        /* Adjust the font size for mobile devices */
+    }
 }

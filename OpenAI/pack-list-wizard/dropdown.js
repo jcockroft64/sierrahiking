@@ -9,12 +9,16 @@ const sidebarTitles = document.querySelectorAll(".sidebar-title");
 const configContent = document.getElementById("configContent");
 const recommendationsContent = document.getElementById("recommendationsContent");
 const summaryContent = document.getElementById("summaryContent");
+const aboutContent = document.getElementById("aboutContent");
 
+
+//open the horizontal sidebar tabs
 sidebarTitles.forEach((title) => {
   title.addEventListener("click", () => {
     configContent.style.display = "none";
     recommendationsContent.style.display = "none";
     summaryContent.style.display = "none";
+    aboutContent.style.display = "none"; // Hide the About content initially
 
     if (title.id === "configTitle") {
       configContent.style.display = "block";
@@ -22,6 +26,8 @@ sidebarTitles.forEach((title) => {
       recommendationsContent.style.display = "block";
     } else if (title.id === "summaryTitle") {
       summaryContent.style.display = "block";
+    } else if (title.id === "aboutTitle") {
+      aboutContent.style.display = "block"; // Show the About content if About tab is clicked
     }
 
     // Close the sidebar on mobile
@@ -39,6 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
   openTab("clothing");
 });
 
+//open the tabs within the pack list tab
 function openTab(tabName) {
   var i, tabcontent, tabs;
   tabcontent = document.getElementsByClassName("tabcontent");
